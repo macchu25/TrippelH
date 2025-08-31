@@ -14,7 +14,7 @@ const syncUserCreation=inngest.createFunction(
         // check availability of user last_name
         const user = await User.findOne({ user_name: username });
         if(user){
-            username = username + Math.floor(Math.random() * 1000);
+            username = username + Math.floor(Math.random() * 10000);
         }
         const userData = {
             _id: id,
