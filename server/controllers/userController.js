@@ -1,4 +1,4 @@
- 
+
 import imagekit from "../configs/imagekit.js"
 import User from "../models/User.js"
 import fs from "fs"
@@ -67,7 +67,7 @@ export const updateUserData = async (req, res) => {
                 transformation: [
                     { quality: 'auto' },
                     { format: 'webp' },
-                    { width: '512' }
+                    { width: '1280' }
                 ]
             })
 
