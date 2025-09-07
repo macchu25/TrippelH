@@ -1,9 +1,17 @@
 import React, { useState } from "react";
 import { dummyUserData } from "../assets/assets";
 import { Pencil } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 
-const ProfileModal = ({setShowEdit}) => {
-  const user = dummyUserData;
+import { updateUser } from "../features/user/userSlice.js";
+import { useAuth } from "@clerk/clerk-react";
+import toast from "react-hot-toast";
+
+const ProfileModal = ({ setShowEdit }) => {
+  const dispatch = useDispatch();
+  const { getToken } = useAuth();
+
+  const user = useSelector((state) => state.user.value);
   const [editForm, setEditForm] = useState({
     username: user.username,
     bio: user.bio,
@@ -15,6 +23,35 @@ const ProfileModal = ({setShowEdit}) => {
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
+    try {
+      const userData = new FormData();
+      const {
+        full_name,
+        username,
+        bio,
+        location,
+        profile_picture,
+        cover_photo,
+      } = editForm;
+
+      userData.append("username", username);
+      userData.append("bio", bio);
+      userData.append("location", location);
+      userData.append("full_name", full_name);
+      if (profile_picture) {
+        userData.append("profile", profile_picture);
+      }
+      if (cover_photo) {
+        userData.append("cover", cover_photo);
+      }
+
+      const token = await getToken();
+      dispatch(updateUser({ userData, token }));
+      setShowEdit(false);
+    } catch (err) {
+      toast.error(err.message);
+      console.log(err);
+    }
   };
 
   return (
@@ -25,7 +62,13 @@ const ProfileModal = ({setShowEdit}) => {
             Edit Profile
           </h1>
 
-          <form action="" className="space-y-4" onSubmit={handleSaveProfile}>
+          <form
+            action=""
+            className="space-y-4"
+            onSubmit={(e) =>
+              toast.promise(handleSaveProfile(e), { loading: "Saving..." })
+            }
+          >
             {/* profile picture */}
             <div className="flex flex-col items-start gap-3">
               <label
@@ -36,8 +79,7 @@ const ProfileModal = ({setShowEdit}) => {
                 <input
                   hidden
                   type="file"
-                  id="profile_picture"
-                  name="profile_picture"
+                  id="profile_picture" 
                   accept="image/*"
                   onChange={(e) =>
                     setEditForm({
@@ -64,7 +106,6 @@ const ProfileModal = ({setShowEdit}) => {
               </label>
             </div>
 
-
             {/* Cover Photo */}
             <div className="flex flex-col items-start gap-3">
               <label
@@ -75,8 +116,7 @@ const ProfileModal = ({setShowEdit}) => {
                 <input
                   hidden
                   type="file"
-                  id="cover_photo"
-                  name="cover_photo"
+                  id="cover_photo" 
                   accept="image/*"
                   onChange={(e) =>
                     setEditForm({
@@ -103,42 +143,89 @@ const ProfileModal = ({setShowEdit}) => {
               </label>
             </div>
 
-
             <div>
-                <label htmlFor="" className="block text-sm font-medium text-gray-700 mb-1">
-                    Name
-                </label>
-                <input  type="text" className="w-full p-3 border border-gray-200 rounded-lg" placeholder="Please enter full name"  onChange={(e)=>setEditForm({...editForm,full_name:e.target.value})} value={editForm.full_name} />
+              <label
+                htmlFor=""
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                className="w-full p-3 border border-gray-200 rounded-lg"
+                placeholder="Please enter full name"
+                onChange={(e) =>
+                  setEditForm({ ...editForm, full_name: e.target.value })
+                }
+                value={editForm.full_name}
+              />
             </div>
             <div>
-                <label htmlFor="" className="block text-sm font-medium text-gray-700 mb-1">
-                    Username
-                </label>
-                <input  type="text" className="w-full p-3 border border-gray-200 rounded-lg" placeholder="Please enter username"  onChange={(e)=>setEditForm({...editForm,username:e.target.value})} value={editForm.username} />
+              <label
+                htmlFor=""
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Username
+              </label>
+              <input
+                type="text"
+                className="w-full p-3 border border-gray-200 rounded-lg"
+                placeholder="Please enter username"
+                onChange={(e) =>
+                  setEditForm({ ...editForm, username: e.target.value })
+                }
+                value={editForm.username}
+              />
             </div>
             <div>
-                <label htmlFor="" className="block text-sm font-medium text-gray-700 mb-1">
-                    Bio
-                </label>
-                <textarea  rows={3} className="w-full p-3 border border-gray-200 rounded-lg" placeholder="Please enter bio"  onChange={(e)=>setEditForm({...editForm,bio:e.target.value})} value={editForm.bio} />
+              <label
+                htmlFor=""
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Bio
+              </label>
+              <textarea
+                rows={3}
+                className="w-full p-3 border border-gray-200 rounded-lg"
+                placeholder="Please enter bio"
+                onChange={(e) =>
+                  setEditForm({ ...editForm, bio: e.target.value })
+                }
+                value={editForm.bio}
+              />
             </div>
             <div>
-                <label htmlFor="" className="block text-sm font-medium text-gray-700 mb-1">
-                    Location
-                </label>
-                <input  type="text" className="w-full p-3 border border-gray-200 rounded-lg" placeholder="Please enter location"  onChange={(e)=>setEditForm({...editForm,location:e.target.value})} value={editForm.location} />
+              <label
+                htmlFor=""
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Location
+              </label>
+              <input
+                type="text"
+                className="w-full p-3 border border-gray-200 rounded-lg"
+                placeholder="Please enter location"
+                onChange={(e) =>
+                  setEditForm({ ...editForm, location: e.target.value })
+                }
+                value={editForm.location}
+              />
             </div>
-
 
             <div className=" flex justify-end space-x-3 pt-6">
-
-                <button onClick={()=>setShowEdit(false)} type="button" className="px-4 py-2 border cursor-pointer border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-                    Cancel
-                </button>
-                <button type="submit" className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:from-indigo-600 hover:to-purple-700 transition cursor-pointer ">
-                    Save Changes
-                </button>
-
+              <button
+                onClick={() => setShowEdit(false)}
+                type="button"
+                className="px-4 py-2 border cursor-pointer border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:from-indigo-600 hover:to-purple-700 transition cursor-pointer "
+              >
+                Save Changes
+              </button>
             </div>
           </form>
         </div>

@@ -3,10 +3,11 @@ import React, { useState } from "react";
 import moment from "moment";
 import { dummyUserData } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const PostCard = ({ post }) => {
   const [likes, setLikes] = useState(post.likes_count);
-  const currentUser = dummyUserData;
+  const currentUser = useSelector ((state) => state.user.value);
 
   const postWithHashtags = post.content.replace(
     /(#\w+)/g,

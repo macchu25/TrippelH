@@ -8,9 +8,9 @@ const UserProfileInfo = ({ user, posts, profileId, setShowEdit }) => {
       <div className=" flex flex-col md:flex-row items-start gap-6">
         <div className="w-32 h-32 border-4 border-white shadow-lg absolute -top-16 rounded-full">
           <img
-            className="absolute  rounded-full z-2"
             src={user.profile_picture}
-            alt={user.full_name}
+            alt=""
+            className="absolute w-32 h-32 rounded-full z-2"
           />
         </div>
         <div className="w-full pt-16 md:pt-0 md:pl-36">
@@ -29,11 +29,15 @@ const UserProfileInfo = ({ user, posts, profileId, setShowEdit }) => {
 
             {/* if user is not on other's profile then we will give edit button */}
 
-            {!profileId && 
-            <button onClick={()=>setShowEdit(true)} className="cursor-pointer flex items-center gap-2 border border-gray-300 hover:bg-gray-50 px-4 py-2 rounded-lg font-medium transition-colors mt-4 md:mt-0">
-              <PenBox className="w-4 h-4" />
-              Edit
-              </button>}
+            {!profileId && (
+              <button
+                onClick={() => setShowEdit(true)}
+                className="cursor-pointer flex items-center gap-2 border border-gray-300 hover:bg-gray-50 px-4 py-2 rounded-lg font-medium transition-colors mt-4 md:mt-0"
+              >
+                <PenBox className="w-4 h-4" />
+                Edit
+              </button>
+            )}
           </div>
           <p className="text-gray-700 text-sm max-w-md mt-4">{user.bio}</p>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-500 mt-4">
@@ -43,24 +47,40 @@ const UserProfileInfo = ({ user, posts, profileId, setShowEdit }) => {
             </span>
             <span className="flex items-center gap-1.5">
               <Calendar className="w-4 h-4" />
-              Joined <span className="font-medium">{moment(user.created_at).fromNow()}</span>
+              Joined{" "}
+              <span className="font-medium">
+                {moment(user.created_at).fromNow()}
+              </span>
             </span>
-
           </div>
 
-          <div className="flex items-center gap-6 mt-6 border-gray-200 pt-4
-          ">
+          <div
+            className="flex items-center gap-6 mt-6 border-gray-200 pt-4
+          "
+          >
             <div>
-              <span className="sm:text-xl font-bold text-gray-900">{posts.length}</span>
-              <span className="text-xs sm:text-sm text-gray-500 ml-1">Posts</span>
+              <span className="sm:text-xl font-bold text-gray-900">
+                {posts.length}
+              </span>
+              <span className="text-xs sm:text-sm text-gray-500 ml-1">
+                Posts
+              </span>
             </div>
             <div>
-              <span className="sm:text-xl font-bold text-gray-900">{user.followers.length}</span>
-              <span className="text-xs sm:text-sm text-gray-500 ml-1">Followers</span>
+              <span className="sm:text-xl font-bold text-gray-900">
+                {user.followers.length}
+              </span>
+              <span className="text-xs sm:text-sm text-gray-500 ml-1">
+                Followers
+              </span>
             </div>
             <div>
-              <span className="sm:text-xl font-bold text-gray-900">{user.following.length}</span>
-              <span className="text-xs sm:text-sm text-gray-500 ml-1">Following</span>
+              <span className="sm:text-xl font-bold text-gray-900">
+                {user.following.length}
+              </span>
+              <span className="text-xs sm:text-sm text-gray-500 ml-1">
+                Following
+              </span>
             </div>
           </div>
         </div>
