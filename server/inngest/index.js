@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import Connection from "../models/Connection.js";
 import sendEmail from "../configs/nodeMailer.js";
 import Story from "../models/Story.js";
+import Message from "../models/Messages.js";
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "pingup-app" });
@@ -132,18 +133,55 @@ const sendConnectionRequestReminder = inngest.createFunction(
 
 
 // inngest function to delete story after 24 hours of creation
-const deleteStory= inngest.createFunction(
+const deleteStory = inngest.createFunction(
 
-    {id:"story-delete"},
-    {event:"app/story.delete"},
-    async({event,step})=>{
-        const {storyId}= event.data
-        const in24Hours= new Date(Date.now()+ 24*60*60*1000)
+    { id: "story-delete" },
+    { event: "app/story.delete" },
+    async ({ event, step }) => {
+        const { storyId } = event.data
+        const in24Hours = new Date(Date.now() + 24 * 60 * 60 * 1000)
         await step.sleepUntil('wait-for-24-hours', in24Hours)
-        await step.run('delete-story', async()=>{
+        await step.run('delete-story', async () => {
             await Story.findByIdAndDelete(storyId)
-            return {message: "Story deleted"}
+            return { message: "Story deleted" }
         })
+    }
+)
+
+const sendNotificationofUnseenMessages = inngest.createFunction(
+    { id: "send-unseen-message-notification" },
+    { cron: "TZ=America/New_York 0 9 * * * " }, // every day at 9 AM
+
+    async ({ step }) => {
+        const messages = await Message.find({ seen: false }).populate('to_user_id ')
+        const unseenCount = {}
+        messages.map(message => {
+            unseenCount[message.to_user_id._id] = (unseenCount[message.to_user_id._id] || 0) + 1
+
+        })
+
+        for (const userId in unseenCount) {
+            const user = await User.findById(userId)
+            const subject = ` You have ${unseenCount[userId]} unseen messages `
+            const body = `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <h2>Hi ${user.full_name},</h2>
+                <p>You have ${unseenCount[userId]} unseen messages waiting for you on PingUp.</p>
+                <p>Click <a href="${process.env.FRONTEND_URL}/messages" style="color: #10b981;">here</a> to view your messages and stay connected.</p>
+                <br/>
+                <p>Thanks,<br/>PingUp - Stay Connected</p>
+            </div> `
+
+            await sendEmail({
+                to: user.email,
+                subject,
+                body
+            })
+        }
+
+        return { message: "Notifications sent" }
+
+
     }
 )
 
@@ -156,4 +194,5 @@ export const functions = [
     syncUserDeletion,
     sendConnectionRequestReminder,
     deleteStory,
+    sendNotificationofUnseenMessages,
 ];
