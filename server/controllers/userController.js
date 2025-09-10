@@ -17,12 +17,13 @@ export const getUserData = async (req, res) => {
         const user = await User.findById(userId)
 
         if (!user) {
+            console.log("User not found with id:", userId)
             return res.json({ success: false, message: "User not found" })
         }
         return res.json({ success: true, user })
 
     } catch (error) {
-        console.log(error)
+        console.log("error in userController(getUserData)", error)
         res.json({ success: false, message: error.message })
     }
 }
@@ -101,7 +102,7 @@ export const updateUserData = async (req, res) => {
         res.json({ success: true, user, message: "Profile updated successfully" })
 
     } catch (error) {
-        console.log(error)
+        console.log("error in userController(updateUserData)", error)
         res.json({ success: false, message: error.message })
     }
 }
@@ -128,7 +129,7 @@ export const discoverUsers = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error)
+        console.log("error in userController(discoverUsers)", error)
         res.json({ success: false, message: error.message })
     }
 }
@@ -154,7 +155,7 @@ export const followUser = async (req, res) => {
         res.json({ success: true, message: "Now you are following this user" })
 
     } catch (error) {
-        console.log(error)
+        console.log("error in userController(followUser)", error)
         res.json({ success: false, message: error.message })
     }
 }
@@ -177,7 +178,7 @@ export const unfollowUser = async (req, res) => {
         res.json({ success: true, message: "You are no longer following this user" })
 
     } catch (error) {
-        console.log(error)
+        console.log("error in userController(unfollowUser)", error)
         res.json({ success: false, message: error.message })
     }
 }
@@ -226,7 +227,7 @@ export const sendConnectionRequest = async (req, res) => {
         return res.json({ success: false, message: "Connection request pending" })
 
     } catch (error) {
-        console.log(error)
+        console.log("error in userController(sendConnectionRequest)", error)
         res.json({ success: false, message: error.message })
     }
 }
@@ -245,7 +246,7 @@ export const getUserConnections = async (req, res) => {
 
         res.json({ success: true, connections, followers, following, pendingConnections })
     } catch (error) {
-        console.log(error)
+        console.log("error in userController(getUserConnections)", error)
         res.json({ success: false, message: error.message })
     }
 }
@@ -277,7 +278,7 @@ export const acceptConnectionRequest = async (req, res) => {
 
         res.json({ success: true, message: "Connection accepted successfully" })
     } catch (error) {
-        console.log(error)
+        console.log("error in userController(acceptConnectionRequest)", error)
         res.json({ success: false, message: error.message })
     }
 }
@@ -294,7 +295,7 @@ export const getUserProfiles = async (req, res) => {
 
         res.json({ success: true, profile, posts })
     } catch (error) {
-        console.log(error)
+        console.log("error in userController(getUserProfiles)", error)
         res.json({ success: false, message: error.message })
     }
 }

@@ -1,15 +1,12 @@
-import { Menu,  X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { dummyUserData } from "../assets/assets";
-import Loading from "../components/Loading";
 import Sidebar from "../components/Sidebar";
-import { useSelector } from "react-redux";
 
 const Layout = () => {
-  const user= useSelector((state) => state.user.value);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  return user ? (
+
+  return (
     <div className="w-full flex h-screen">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       <div className="flex-1 bg-slate-50">
@@ -27,9 +24,7 @@ const Layout = () => {
         />
       )}
     </div>
-  ) : (
-    <h1><Loading /></h1>
-  )
+  );
 };
 
 export default Layout;

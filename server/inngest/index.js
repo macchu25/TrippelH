@@ -10,28 +10,38 @@ export const inngest = new Inngest({ id: "pingup-app" });
 
 // Inngest fuction to save user to database 
 const syncUserCreation = inngest.createFunction(
-    { id: 'sync-user-from-clerk' },
-    { event: 'clerk/user.created' },
+    { id: "sync-user-from-clerk" },
+    { event: "clerk/user.created" },
     async ({ event }) => {
-        const { id, first_name, last_name, email_addresses, image_url } = event.data;
-        let username = email_addresses[0].email_address.split('@')[0];
-        // check availability of user last_name
-        const user = await User.findOne({ user_name: username });
-        if (user) {
-            username = username + Math.floor(Math.random() * 10000);
-        }
-        const userData = {
-            _id: id,
-            email: email_addresses[0].email_address,
-            full_name: first_name + " " + last_name,
-            profile_picture: image_url,
-            username
-        }
+        try {
+            console.log("📩 Incoming Clerk user.created event:", event.data);
 
-        await User.create(userData);
+            const { id, first_name, last_name, email_addresses, image_url } = event.data;
+
+            let username = email_addresses?.[0]?.email_address.split("@")[0];
+            const existing = await User.findOne({ username });
+            if (existing) {
+                username = username + Math.floor(Math.random() * 10000);
+            }
+
+            const full_name =
+                `${first_name || ""} ${last_name || ""}`.trim() || username;
+
+            const userData = {
+                _id: id,
+                email: email_addresses?.[0]?.email_address,
+                full_name,
+                profile_picture: image_url,
+                username,
+            };
+
+            await User.create(userData);
+            console.log("✅ User created in Mongo:", userData);
+        } catch (err) {
+            console.error("❌ Error in syncUserCreation:", err.message, err.stack);
+        }
     }
-)
-
+);
 
 // Ingest function to update user in database
 const syncUserUpdation = inngest.createFunction(
