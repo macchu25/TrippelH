@@ -14,6 +14,7 @@ import { Toaster } from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { fetchUser } from "./features/user/userSlice.js";
 import { fetchConnection } from "./features/connections/connectionSlice.js";
+import { AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
 
 const App = () => {
   const { user } = useUser();
@@ -39,6 +40,10 @@ const App = () => {
         <Route
           path="/login"
           element={!user ? <Login /> : <Navigate to="/feed" replace />}
+        />
+        <Route
+          path="/login/sso-callback"
+          element={<AuthenticateWithRedirectCallback />}
         />
 
         {/* App routes (protected) */}
