@@ -39,4 +39,10 @@ const startServer = async () => {
     }
 }
 
-startServer()
+// Only start server if not in Vercel environment
+if (process.env.VERCEL !== '1') {
+    startServer()
+}
+
+// Export for Vercel
+export default app
